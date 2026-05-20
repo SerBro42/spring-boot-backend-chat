@@ -1,0 +1,28 @@
+package com.bolsadeideas.springboot.backend.chat.controllers;
+
+import java.util.Date;
+
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
+
+import com.bolsadeideas.springboot.backend.chat.models.documents.Mensaje;
+
+//We use "Controller" instead of "RestController" because we are not going to return JSON, but we are going to return a view (HTML)
+@Controller
+public class ChatController {
+
+    //Our message broker has a prefix "/chat/", so we need to send the message to that 
+    // prefix, and we need to use the @MessageMapping annotation to map the message to the 
+    // method that will handle it, and we need to use the @SendTo annotation to specify the 
+    // destination where the message will be sent after being processed by the method
+    @MessageMapping("/mensaje")
+    @SendTo("/chat/mensaje")
+    public Mensaje recibeMensaje(Mensaje mensaje) {
+        mensaje.setFecha(new Date().getTime());
+        mensaje.setTexto("Recibido por el broker: " + mensaje.getTexto());
+
+        return mensaje;
+    }
+
+}
