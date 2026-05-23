@@ -1,6 +1,7 @@
 package com.bolsadeideas.springboot.backend.chat.controllers;
 
 import java.util.Date;
+import java.util.Random;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -12,6 +13,8 @@ import com.bolsadeideas.springboot.backend.chat.models.documents.Mensaje;
 @Controller
 public class ChatController {
 
+    private String[] colores = {"red", "green", "blue", "magenta", "purple", "orange"};
+
     //Our message broker has a prefix "/chat/", so we need to send the message to that 
     // prefix, and we need to use the @MessageMapping annotation to map the message to the 
     // method that will handle it, and we need to use the @SendTo annotation to specify the 
@@ -22,6 +25,7 @@ public class ChatController {
         mensaje.setFecha(new Date().getTime());
 
         if(mensaje.getTipo().equals("NUEVO_USUARIO")) {
+            mensaje.setColor(colores[new Random().nextInt(colores.length)]);
             mensaje.setTexto("nuevo usuario");
         }
 
