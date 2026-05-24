@@ -6,6 +6,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import com.bolsadeideas.springboot.backend.chat.models.documents.Mensaje;
@@ -19,6 +20,9 @@ public class ChatController {
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private SimpMessagingTemplate webSocket;
 
     //Our message broker has a prefix "/chat/", so we need to send the message to that 
     // prefix, and we need to use the @MessageMapping annotation to map the message to the 
@@ -43,6 +47,13 @@ public class ChatController {
     @SendTo("/chat/escribiendo")
     public String estaEscribiendo(String username) {
         return username.concat(" está escribiendo...");
+    }
+
+    //Request message history for the last 10 messages for every new user that connects to the chat, and send it to the client
+    //Each individual client has their own request, this request is not broadcasted to all clients.
+    @MessageMapping("/historial")
+    public void historial(String clienteId) {
+        webSocket.convertAndSend("/chat/historial/" + clienteId, chatService.obtenerUltimos10Mensajes());
     }
 
 }
